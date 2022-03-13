@@ -1,4 +1,5 @@
 const { spawn } = require('child_process')
+const { resolve } = require('path')
 
 if (process.env.IN_TESTS === '1')
   process.exit(0)
@@ -19,11 +20,12 @@ spawn(
     '--no-owner',
     '--exclude-schema=graphile_migrate',
     '--exclude-schema=graphile_worker',
-    '--file=../data/schema.sql',
+    '--file=data/schema.sql',
     connectionString,
   ],
   {
     stdio: 'inherit',
     shell: true,
+    cwd: resolve(__dirname, '..'),
   },
 )

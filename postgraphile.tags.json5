@@ -1,4 +1,3 @@
-/* This should be JSON5, but we chose JSONC for VSCode compatibility. */
 /*
  * This file contains your Smart Tags, allowing you to "tag" database entities
  * in order to customise how your GraphQL schema is generated. If you prefer,

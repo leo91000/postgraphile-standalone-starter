@@ -23,7 +23,8 @@
     "db:commit": "pnpm run gm -- commit",
     "db:uncommit": "pnpm run gm -- uncommit",
     "db:reset": "pnpm run gm -- reset",
-    "db:dump": "pnpm run gm -- migrate && pnpm run gm -- reset --shadow --erase && pnpm run gm -- migrate --shadow --force-Actions"
+    "db:dump": "pnpm run gm -- migrate && pnpm run gm -- reset --shadow --erase && pnpm run gm -- migrate --shadow --force-Actions",
+    "gw": "node -r ./scripts/config node_modules/graphile-worker/dist/cli.js"
   },
   "dependencies": {
     "@graphile-contrib/pg-simplify-inflector": "^6.1.0",
@@ -34,6 +35,7 @@
     "cors": "^2.8.5",
     "express": "4.17.3",
     "express-session": "^1.17.2",
+    "graphile-worker": "^0.12.2",
     "helmet": "^5.0.2",
     "lodash": "^4.17.21",
     "morgan": "^1.10.0",
