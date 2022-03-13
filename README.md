@@ -4,6 +4,12 @@ Le backend de l'activité d'anais
 
 ## Configuration
 
+### Required command line tools
+
+- pg_dump
+- pnpm
+- just
+
 ### Env
 
 ```dotenv
