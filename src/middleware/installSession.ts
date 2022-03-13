@@ -4,6 +4,7 @@ import type { Express, RequestHandler } from 'express'
 import session from 'express-session'
 import { createClient } from 'redis'
 
+import { getWebsocketMiddlewares } from '../websocket'
 import { getRootPgPool } from './installDatabasePools'
 
 const RedisStore = ConnectRedis(session)
@@ -81,4 +82,5 @@ export default async(app: Express) => {
   }
 
   app.use(wrappedSessionMiddleware)
+  getWebsocketMiddlewares(app).push(wrappedSessionMiddleware)
 }

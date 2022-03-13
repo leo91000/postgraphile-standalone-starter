@@ -1,10 +1,12 @@
 import { resolve } from 'path'
 import GraphilePro from '@graphile/pro' // Requires license key
+import PgPubsub from '@graphile/pg-pubsub'
 import PgSimplifyInflectorPlugin from '@graphile-contrib/pg-simplify-inflector'
 import type { Express, Request, Response } from 'express'
 import { NodePlugin } from 'graphile-build'
 import type { Pool, PoolClient } from 'pg'
 import type {
+  Middleware,
   PostGraphileOptions,
 } from 'postgraphile'
 import {
@@ -15,10 +17,12 @@ import {
 import { makePgSmartTagsFromFilePlugin } from 'postgraphile/plugins'
 
 import { getHttpServer } from '../app'
-import PassportLoginPlugin from '../plugins/passportPlugin'
+import PassportLoginPlugin from '../plugins/passportAuthPlugin'
 import PrimaryKeyMutationsOnlyPlugin from '../plugins/primaryKeyMutationsOnlyPlugin'
 import RemoveQueryQueryPlugin from '../plugins/removeQueryQueryPlugin'
 import handleErrors from '../utils/handleErrors'
+import { getWebsocketMiddlewares } from '../websocket'
+import SubscriptionsPlugin from '../plugins/subscriptionPlugin'
 import { getAuthPgPool, getRootPgPool } from './installDatabasePools'
 
 export interface OurGraphQLContext {
@@ -30,9 +34,7 @@ export interface OurGraphQLContext {
 }
 
 const TagsFilePlugin = makePgSmartTagsFromFilePlugin(
-  // We're using JSONC for VSCode compatibility; also using an explicit file
-  // path keeps the tests happy.
-  resolve(__dirname, '../../postgraphile.tags.jsonc'),
+  resolve(__dirname, '../../postgraphile.tags.json5'),
 )
 
 type UUID = string
@@ -56,15 +58,18 @@ const isDev = process.env.NODE_ENV === 'development'
 // const isTest = process.env.NODE_ENV === "test";
 
 const pluginHook = makePluginHook([
+  PgPubsub,
   // If we have a Graphile Pro license, then enable the plugin
   ...(process.env.GRAPHILE_LICENSE ? [GraphilePro] : []),
 ])
 
 interface IPostGraphileOptionsOptions {
+  websocketMiddlewares?: Middleware<Request, Response>[]
   rootPgPool: Pool
 }
 
 export function getPostGraphileOptions({
+  websocketMiddlewares,
   rootPgPool,
 }: IPostGraphileOptionsOptions) {
   const options: PostGraphileOptions<Request, Response> = {
@@ -82,6 +87,7 @@ export function getPostGraphileOptions({
     // Add websocket support to the PostGraphile server; you still need to use a subscriptions plugin such as
     // @graphile/pg-pubsub
     subscriptions: true,
+    websocketMiddlewares,
 
     // enableQueryBatching: On the client side, use something like apollo-link-batch-http to make use of this
     enableQueryBatching: true,
@@ -140,6 +146,9 @@ export function getPostGraphileOptions({
 
       // Adds the `login` mutation to enable users to log in
       PassportLoginPlugin,
+
+      // Adds realtime features to our GraphQL schema
+      SubscriptionsPlugin,
     ],
 
     /*
@@ -240,12 +249,14 @@ export function getPostGraphileOptions({
 }
 
 export default function installPostGraphile(app: Express) {
+  const websocketMiddlewares = getWebsocketMiddlewares(app)
   const authPgPool = getAuthPgPool(app)
   const rootPgPool = getRootPgPool(app)
   const middleware = postgraphile<Request, Response>(
     authPgPool,
     'app_public',
     getPostGraphileOptions({
+      websocketMiddlewares,
       rootPgPool,
     }),
   )

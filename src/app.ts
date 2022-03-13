@@ -5,6 +5,7 @@ import type { ShutdownAction } from './shutdownActions'
 import { makeShutdownActions } from './shutdownActions'
 import middleware from './middleware'
 import startWorker from './worker'
+import { installWebsocketMiddlewares } from './websocket'
 
 export function getHttpServer(app: Express): Server | void {
   return app.get('httpServer')
@@ -23,12 +24,15 @@ export async function makeApp({ httpServer }: { httpServer?: Server } = {}): Pro
 
   app.set('shutdownActions', shutdownActions)
 
+  installWebsocketMiddlewares(app)
+
   await middleware.installDatabasePools(app)
   await middleware.installHelmet(app)
   await middleware.installCors(app)
   await middleware.installSession(app)
   await middleware.installPassport(app)
   await middleware.installLogging(app)
+  await middleware.installPostGraphile(app)
 
   await middleware.installErrorHandler(app)
 

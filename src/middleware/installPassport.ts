@@ -1,5 +1,6 @@
 import type { Express } from 'express'
 import passport from 'passport'
+import { getWebsocketMiddlewares } from '../websocket'
 
 interface DbSession {
   session_id: string
@@ -24,9 +25,11 @@ export default async(app: Express) => {
 
   const passportInitializeMiddleware = passport.initialize()
   app.use(passportInitializeMiddleware)
+  getWebsocketMiddlewares(app).push(passportInitializeMiddleware)
 
   const passportSessionMiddleware = passport.session()
   app.use(passportSessionMiddleware)
+  getWebsocketMiddlewares(app).push(passportSessionMiddleware)
 
   app.get('/logout', (req, res) => {
     req.logout()

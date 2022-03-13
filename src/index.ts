@@ -7,6 +7,7 @@ async function main() {
   const httpServer = createServer()
 
   const app = await makeApp({ httpServer })
+  httpServer.addListener('request', app)
 
   const PORT = parseInt(process.env.PORT || '', 10) || 3000
 
@@ -17,7 +18,7 @@ async function main() {
     console.log()
     console.log(
       chalk.green(
-        `${chalk.bold('@anais-coletta-coaching/api')} listening on port ${chalk.bold(actualPort)}`,
+        `${chalk.bold('api')} listening on port ${chalk.bold(actualPort)}`,
       ),
     )
     console.log()
