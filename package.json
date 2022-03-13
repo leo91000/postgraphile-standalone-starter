@@ -15,7 +15,7 @@
     "setup:db": "node -r ./scripts/config scripts/setup_db.js",
     "build": "tsc",
     "dev:start": "pnpm run build && node -r ./scripts/config --inspect dist/index.js",
-    "dev:watch": "nodemon --ext ts --exec \"pnpm run dev:start\"",
+    "dev:watch": "nodemon --watch src --ext ts --exec \"pnpm run dev:start\"",
     "dev": "concurrently --kill-others -n API,DB --prefix-colors \"yellow.bold,cyan.bold\" \"pnpm run dev:watch\" \"pnpm run db:watch\"",
     "gm": "node -r ./scripts/config node_modules/graphile-migrate/dist/cli.js",
     "db:migrate": "pnpm run gm -- migrate",

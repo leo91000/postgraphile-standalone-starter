@@ -49,7 +49,7 @@ export default async(app: Express) => {
        */
       pool: rootPgPool,
       schemaName: 'app_private',
-      tableName: 'connect_pg_sessions',
+      tableName: 'connect_pg_simple_sessions',
     })
   }
 
