@@ -1,5 +1,7 @@
+/* eslint-disable no-console */
 import { createServer } from 'http'
 import chalk from 'chalk'
+import { getShutdownActions, makeApp } from './app'
 
 async function main() {
   const httpServer = createServer()

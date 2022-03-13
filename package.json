@@ -16,8 +16,12 @@
     "dev": "nodemon --ext ts --exec \"pnpm run dev:start\""
   },
   "dependencies": {
-    "@types/passport": "^1.0.7",
+    "@graphile-contrib/pg-simplify-inflector": "^6.1.0",
+    "@graphile/pro": "^1.0.3",
     "chalk": "5.0.1",
+    "connect-pg-simple": "^7.0.0",
+    "connect-redis": "^6.1.1",
+    "cors": "^2.8.5",
     "express": "4.17.3",
     "express-session": "^1.17.2",
     "helmet": "^5.0.2",
@@ -25,16 +29,21 @@
     "morgan": "^1.10.0",
     "passport": "^0.5.2",
     "pg": "^8.7.3",
-    "postgraphile": "4.12.9"
+    "postgraphile": "4.12.9",
+    "redis": "^4.0.4"
   },
   "devDependencies": {
     "@antfu/eslint-config": "0.18.8",
     "@swc/cli": "0.1.55",
     "@swc/core": "1.2.154",
+    "@types/connect-pg-simple": "^7.0.0",
+    "@types/connect-redis": "^0.0.18",
+    "@types/cors": "^2.8.12",
     "@types/express": "4.17.13",
     "@types/express-session": "^1.17.4",
     "@types/lodash": "^4.14.179",
     "@types/morgan": "^1.9.3",
+    "@types/passport": "^1.0.7",
     "eslint": "8.11.0",
     "nodemon": "2.0.15",
     "pnpm": "6.32.3",

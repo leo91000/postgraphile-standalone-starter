@@ -2,7 +2,7 @@ import { readFileSync } from 'fs'
 import { resolve } from 'path'
 import type { ErrorRequestHandler, Express } from 'express'
 import type { TemplateExecutor } from 'lodash'
-import { template } from 'lodash'
+import { get, template } from 'lodash'
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -12,29 +12,26 @@ interface ParsedError {
   code?: string
 }
 
-export class ErrorWithCode extends Error {
-  constructor(msg: string, public readonly code: string, public readonly statusCode?: string, public readonly status?: string) {
-    super(msg)
-  }
-}
-
-function parseError(error: ErrorWithCode): ParsedError {
+function parseError(error: Error): ParsedError {
   /*
    * Because an error may contain confidential information or information that
    * might help attackers, by default we don't output the error message at all.
    * You should override this for specific classes of errors below.
    */
 
-  if (error.code === 'EBADCSRFTOKEN') {
+  const errorCode = get(error, ['code'])
+  if (errorCode === 'EBADCSRFTOKEN') {
     return {
       message: 'Invalid CSRF token: please reload the page.',
       status: 403,
-      code: error.code,
+      code: errorCode,
     }
   }
 
   // TODO: process certain errors
-  const code = error.statusCode || error.status || error.code
+  const errorStatusCode = get(error, ['statusCode'])
+  const errorStatus = get(error, ['status'])
+  const code = errorStatusCode || errorStatus || errorCode
   const codeAsFloat = parseInt(code, 10)
   const httpCode
     = isFinite(codeAsFloat) && codeAsFloat >= 400 && codeAsFloat < 600
