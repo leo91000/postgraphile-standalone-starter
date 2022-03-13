@@ -4,6 +4,7 @@ import express from 'express'
 import type { ShutdownAction } from './shutdownActions'
 import { makeShutdownActions } from './shutdownActions'
 import middleware from './middleware'
+import startWorker from './worker'
 
 export function getHttpServer(app: Express): Server | void {
   return app.get('httpServer')
@@ -30,6 +31,8 @@ export async function makeApp({ httpServer }: { httpServer?: Server } = {}): Pro
   await middleware.installLogging(app)
 
   await middleware.installErrorHandler(app)
+
+  await startWorker(app)
 
   return app
 }
